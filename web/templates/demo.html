@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实时演示 — 船只舷号管理系统</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>🚢 船只舷号管理系统</h1>
+  <p>管理船只舷号数据库 — 支持 CSV / SQLite 后端</p>
+</div>
+
+<!-- 导航栏 -->
+<nav class="top-nav">
+  <a href="/" class="nav-link">📋 数据管理</a>
+  <a href="/demo" class="nav-link active">🎥 实时演示</a>
+</nav>
+
+<div class="container">
+  {% if not demo_enabled %}
+  <div class="empty-state">
+    <div class="icon">🔒</div>
+    <h3>演示功能未开启</h3>
+    <p>{{ error }}</p>
+  </div>
+  {% else %}
+
+  <!-- 控制面板 -->
+  <div class="demo-controls">
+    <div class="control-group">
+      <label>视频源</label>
+      <div class="source-tabs">
+        <button class="source-tab active" data-type="camera" onclick="switchSource('camera')">📷 摄像头</button>
+        <button class="source-tab" data-type="file" onclick="switchSource('file')">🎬 视频文件</button>
+      </div>
+    </div>
+
+    <!-- 摄像头选择 -->
+    <div class="control-group" id="cameraGroup">
+      <label>选择摄像头</label>
+      <select id="cameraSelect">
+        <option value="">正在探测…</option>
+      </select>
+    </div>
+
+    <!-- 视频文件选择 -->
+    <div class="control-group" id="fileGroup" style="display:none">
+      <label>选择视频文件</label>
+      <select id="fileSelect">
+        <option value="">正在扫描…</option>
+      </select>
+    </div>
+
+    <!-- 帧率 -->
+    <div class="control-group">
+      <label>帧率 (<span id="fpsValue">15</span> FPS)</label>
+      <input type="range" id="fpsSlider" min="1" max="30" value="15" oninput="document.getElementById('fpsValue').textContent=this.value">
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="control-group control-actions">
+      <button class="btn btn-primary" id="btnStart" onclick="startStream()">▶ 开始</button>
+      <button class="btn btn-danger" id="btnStop" onclick="stopStream()" disabled>⏹ 停止</button>
+    </div>
+  </div>
+
+  <!-- 视频显示区域 -->
+  <div class="demo-viewport" id="viewport">
+    <div class="viewport-placeholder" id="viewportPlaceholder">
+      <div class="icon">🎥</div>
+      <p>选择视频源后点击"开始"</p>
+    </div>
+    <canvas id="videoCanvas" style="display:none"></canvas>
+    <img id="videoImg" style="display:none" />
+  </div>
+
+  <!-- 状态栏 -->
+  <div class="demo-status">
+    <div class="status-item">
+      <span class="label">状态</span>
+      <span class="value" id="statusText">待机</span>
+    </div>
+    <div class="status-item">
+      <span class="label">帧数</span>
+      <span class="value" id="frameCount">0</span>
+    </div>
+    <div class="status-item">
+      <span class="label">分辨率</span>
+      <span class="value" id="resolution">-</span>
+    </div>
+    <div class="status-item">
+      <span class="label">延迟</span>
+      <span class="value" id="latency">-</span>
+    </div>
+  </div>
+
+  <!-- 日志 -->
+  <div class="demo-log">
+    <div class="log-header">
+      <span>📋 日志</span>
+      <button class="btn btn-outline btn-sm" onclick="clearLog()">清空</button>
+    </div>
+    <div class="log-body" id="logBody"></div>
+  </div>
+
+  {% endif %}
+</div>
+
+<script src="/static/js/demo.js"></script>
+</body>
+</html>
